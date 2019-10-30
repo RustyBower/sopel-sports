@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/RustyBower/sopel-sports.svg?branch=master)](https://travis-ci.com/RustyBower/sopel-sports)
+[![PyPI version](https://badge.fury.io/py/sopel-modules.sports.svg)](https://badge.fury.io/py/sopel-modules.sports)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3907c6471663c6ee88df/maintainability)](https://codeclimate.com/github/RustyBower/sopel-sports/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3907c6471663c6ee88df/test_coverage)](https://codeclimate.com/github/RustyBower/sopel-sports/test_coverage)
 
