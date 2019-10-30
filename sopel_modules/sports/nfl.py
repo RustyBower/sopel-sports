@@ -42,27 +42,27 @@ nfl_teams = {
     'DAL': NFLTeam('Dallas', 'Cowboys', colors.BLUE, colors.LIGHT_GREY, 'Cowboys Stadium', 'DAL'),
     'DEN': NFLTeam('Denver', 'Broncos', colors.ORANGE, colors.LIGHT_BLUE, 'INVESCO Field at Mile High', 'DEN'),
     'DET': NFLTeam('Detroit', 'Lions', colors.WHITE, colors.LIGHT_BLUE, 'Ford Field', 'DET'),
-    'GB':  NFLTeam('Green Bay', 'Packers', colors.YELLOW, colors.GREEN, 'Lambeau Field', 'GB'),
+    'GB': NFLTeam('Green Bay', 'Packers', colors.YELLOW, colors.GREEN, 'Lambeau Field', 'GB'),
     'HOU': NFLTeam('Houston', 'Texans', colors.RED, colors.BLUE, 'Reliant Stadium', 'HOU'),
     'HST': NFLTeam('Houston', 'Texans', colors.RED, colors.BLUE, 'Reliant Stadium', 'HOU'),
     'IND': NFLTeam('Indianapolis', 'Colts', colors.WHITE, colors.LIGHT_BLUE, 'Lucas Oil Stadium', 'IND'),
     'JAC': NFLTeam('Jacksonville', 'Jaguars', colors.WHITE, colors.BLUE, 'Jacksonville Municipal Stadium', 'JAX'),
     'JAX': NFLTeam('Jacksonville', 'Jaguars', colors.WHITE, colors.BLUE, 'Jacksonville Municipal Stadium', 'JAX'),
-    'KC':  NFLTeam('Kansas City', 'Chiefs', colors.WHITE, colors.RED, 'Arrowhead Stadium', 'KC'),
+    'KC': NFLTeam('Kansas City', 'Chiefs', colors.WHITE, colors.RED, 'Arrowhead Stadium', 'KC'),
     'LA': NFLTeam('Los Angeles', 'Rams', colors.BLUE, colors.ORANGE, 'Edward Jones Dome', 'LA'),
-    'LAC':  NFLTeam('Los Angeles', 'Chargers', colors.YELLOW, colors.BLUE, 'Qualcomm Stadium', 'LAC'),
+    'LAC': NFLTeam('Los Angeles', 'Chargers', colors.YELLOW, colors.BLUE, 'Qualcomm Stadium', 'LAC'),
     'MIA': NFLTeam('Miami', 'Dolphins', colors.ORANGE, colors.TEAL, 'Land Shark Stadium', 'MIA'),
     'MIN': NFLTeam('Minnesota', 'Vikings', colors.WHITE, colors.PURPLE, 'Hubert H. Humphrey Metrodome', 'MIN'),
-    'NE':  NFLTeam('New England', 'Patriots', colors.BLUE, colors.RED, 'Gillette Stadium', 'NE'),
-    'NO':  NFLTeam('New Orleans', 'Saints', colors.BLACK, colors.ORANGE, 'Louisiana Superdome', 'NO'),
+    'NE': NFLTeam('New England', 'Patriots', colors.BLUE, colors.RED, 'Gillette Stadium', 'NE'),
+    'NO': NFLTeam('New Orleans', 'Saints', colors.BLACK, colors.ORANGE, 'Louisiana Superdome', 'NO'),
     'NYG': NFLTeam('New York', 'Giants', colors.BLUE, colors.RED, 'New Meadowlands Stadium', 'NYG'),
     'NYJ': NFLTeam('New York', 'Jets', colors.WHITE, colors.GREEN, 'New Meadowlands Stadium', 'NYJ'),
     'OAK': NFLTeam('Oakland', 'Raiders', colors.BLACK, colors.WHITE, 'Oakland-Alameda County Coliseum', 'OAK'),
     'PHI': NFLTeam('Philadelphia', 'Eagles', colors.BLACK, colors.TEAL, 'Lincoln Financial Field', 'PHI'),
     'PIT': NFLTeam('Pittsburgh', 'Steelers', colors.BLACK, colors.YELLOW, 'Heinz Field', 'PIT'),
     'SEA': NFLTeam('Seattle', 'Seahawks', colors.LIGHT_GREY, colors.BLUE, 'Qwest Field', 'SEA'),
-    'SF':  NFLTeam('San Francisco', '49ers', colors.RED, colors.ORANGE, 'Candlestick Park', 'SF'),
-    'TB':  NFLTeam('Tampa Bay', 'Buccaneers', colors.RED, colors.GREY, 'Raymond James Stadium', 'TB'),
+    'SF': NFLTeam('San Francisco', '49ers', colors.RED, colors.ORANGE, 'Candlestick Park', 'SF'),
+    'TB': NFLTeam('Tampa Bay', 'Buccaneers', colors.RED, colors.GREY, 'Raymond James Stadium', 'TB'),
     'TEN': NFLTeam('Tennessee', 'Titans', colors.LIGHT_CYAN, colors.BLUE, 'LP Field', 'TEN'),
     'WAS': NFLTeam('Washington', 'Redskins', colors.WHITE, colors.RED, 'FedExField', 'WAS'),
 
@@ -173,9 +173,9 @@ def nfl(bot, trigger):
 
         # Split the message if it's > 200 characters
         if len(reply) > 200:
-            l = int(len(reply.split(' | ')) / 2)
-            bot.reply(' | '.join(reply.split(' | ')[0:l]))
-            bot.reply(' | '.join(reply.split(' | ')[l:]))
+            length = int(len(reply.split(' | ')) / 2)
+            bot.reply(' | '.join(reply.split(' | ')[0:length]))
+            bot.reply(' | '.join(reply.split(' | ')[length:]))
         return
 
     # Get score for specific team
@@ -201,5 +201,5 @@ def nfl(bot, trigger):
             return bot.reply('Team Not Found')
 
     # TODO - Check Postseason Games
-    #r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
-    #return say_info(bot, trigger, 'sports')
+    # r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
+    # return say_info(bot, trigger, 'sports')

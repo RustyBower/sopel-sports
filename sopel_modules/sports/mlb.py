@@ -62,9 +62,9 @@ def mlb(bot, trigger):
     reply = ' | '.join(parse_games(date))
     # Split if greater than 200 characters so we don't accidentally cut anything off
     if len(reply) > 200:
-        l = int(len(reply.split(' | ')) / 2)
-        bot.reply(' | '.join(reply.split(' | ')[0:l]))
-        bot.reply(' | '.join(reply.split(' | ')[l:]))
+        length = int(len(reply.split(' | ')) / 2)
+        bot.reply(' | '.join(reply.split(' | ')[0:length]))
+        bot.reply(' | '.join(reply.split(' | ')[length:]))
         return
     else:
         if reply:
