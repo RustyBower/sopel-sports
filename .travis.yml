@@ -1,0 +1,14 @@
+language: python
+python:
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
+- '3.7'
+- '3.8'
+before_install:
+- sudo apt-get -qq update
+- sudo apt-get install -y libenchant-dev
+install: pip install -e .
+script:
+- pycodestyle --show-source --ignore=E501,E402,E722  ./
