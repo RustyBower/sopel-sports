@@ -6,6 +6,13 @@
 Sports Module for Sopel
 
 # Usage
+## MLB
+```
+.mlb
+Washington Nationals 7 Houston Astros 2 Final
+.mlb 2019-10-30
+Washington Nationals @ Houston Astros 20:08 Eastern
+```
 ## NFL
 ```
 .nfl
