@@ -25,6 +25,7 @@ NFL
 .. code-block::
 
     .nfl # Get current NFL games
+    SEA 20 CAR 7 10:09 Q2 | NE 7 CIN 10 10:01 Q2 | TB 14 DET 0 12:40 Q2 | CHI 0 GB 7 08:38 Q2 | DEN 0 KC 9 11:48 Q2 | MIA 7 NYG 7 08:01 Q2 | HOU 7 TEN 0 09:59 Q2 | PHI 10 WAS 7 08:21 Q2
     .nfl all # Get all NFL games for the week
     WAS 9 MIN 19 Final | SEA 27 ATL 20 Final | PHI 31 BUF 13 Final | LAC 17 CHI 16 Final | NYG 26 DET 31 Final | DEN 13 IND 15 Final | NYJ 15 JAX 29 Final | CIN 10 LA 24 Final | ARI 9 NO 31 Final | TB 23 TEN 27 Final | CAR 13 SF 51 Final | OAK 24 HOU 27 Final | CLE 13 NE 27 Final | GB @ KC Sun 8:20PM | MIA @ PIT Mon 8:15PM
     .nfl <team> # Get latest score for specific team
