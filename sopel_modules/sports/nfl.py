@@ -163,28 +163,29 @@ def nfl(bot, trigger):
     """.nfl <team/all> - Show current game score or next game for an optionally specified team."""
     team = trigger.group(2)
 
-    # Get all scores
-    if not team:
+    # Get current/all scores
+    if not team or team.lower() == 'all':
         # Check Regular Season Games
         r = requests.get('http://www.nfl.com/liveupdate/scorestrip/ss.xml')
         root = ET.fromstring(r.text)
 
         # I think there's a bug here when the London games happen. Since we're assuming 1:00 is in PM
-        reply = ' | '.join([parse_game(game) for game in root.iter('g')])
+        # Get current games
+        if not team:
+            reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['q'] != 'F' if game.attrib['q'] != 'FO' if game.attrib['q'] != 'P'])
+        # Get all games
+        else:
+            reply = ' | '.join([parse_game(game) for game in root.iter('g')])
 
         # Split the message if it's > 200 characters
         if len(reply) > 200:
             length = int(len(reply.split(' | ')) / 2)
-            bot.reply(' | '.join(reply.split(' | ')[0:length]))
-            bot.reply(' | '.join(reply.split(' | ')[length:]))
+            bot.say(' | '.join(reply.split(' | ')[0:length]))
+            bot.say(' | '.join(reply.split(' | ')[length:]))
         return
 
     # Get score for specific team
     else:
-        # Get all scores for the week
-        if team.lower() == 'all':
-            print('all')
-            return
         # If initial aren't specified, try to guess what team it is
         match = re.match(r'^\S{2,3}$', team)
         if not match:
