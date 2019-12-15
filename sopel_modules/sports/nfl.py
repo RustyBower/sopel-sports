@@ -156,10 +156,11 @@ def parse_game(game):
 
 @commands('nfl')
 @example('.nfl')
+@example('.nfl all')
 @example('.nfl DEN')
 @example('.nfl Denver Broncos')
 def nfl(bot, trigger):
-    """.nfl <team> - Show current game score or next game for an optionally specified team."""
+    """.nfl <team/all> - Show current game score or next game for an optionally specified team."""
     team = trigger.group(2)
 
     # Get all scores
@@ -180,6 +181,10 @@ def nfl(bot, trigger):
 
     # Get score for specific team
     else:
+        # Get all scores for the week
+        if team.lower() == 'all':
+            print('all')
+            return
         # If initial aren't specified, try to guess what team it is
         match = re.match(r'^\S{2,3}$', team)
         if not match:
