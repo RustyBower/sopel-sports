@@ -182,6 +182,8 @@ def nfl(bot, trigger):
             length = int(len(reply.split(' | ')) / 2)
             bot.say(' | '.join(reply.split(' | ')[0:length]))
             bot.say(' | '.join(reply.split(' | ')[length:]))
+        else:
+            bot.say(reply)
         return
 
     # Get score for specific team
