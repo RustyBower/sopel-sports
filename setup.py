@@ -30,7 +30,7 @@ setup(
     version='1.1.1',
     description='Sopel Sports Module',
     long_description=readme + '\n\n' + history,
-    long_description_content_type='text/markdown',
+    long_description_content_type='text/x-rst',
     author='Rusty Bower',
     author_email='rusty@rustybower.com',
     url='http://github.com/rustybower/sopel-sports',
