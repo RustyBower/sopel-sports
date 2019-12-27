@@ -27,7 +27,7 @@ with open('dev-requirements.txt') as dev_requirements_file:
 
 setup(
     name='sopel_modules.sports',
-    version='1.1.2',
+    version='1.1.3',
     description='Sopel Sports Module',
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
