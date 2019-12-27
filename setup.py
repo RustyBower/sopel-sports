@@ -21,7 +21,7 @@ with open('NEWS') as history_file:
 with open('requirements.txt') as requirements_file:
     requirements = [req for req in requirements_file.readlines()]
 
-with open('dev-requirements.txt') as dev_requirements_file:
+with open('tests/requirements.txt') as dev_requirements_file:
     dev_requirements = [req for req in dev_requirements_file.readlines()]
 
 
