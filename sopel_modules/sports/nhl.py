@@ -62,8 +62,8 @@ def nhl(bot, trigger):
     # Split if greater than 200 characters so we don't accidentally cut anything off
     if len(reply) > 200:
         length = int(len(reply.split(' | ')) / 2)
-        bot.reply(' | '.join(reply.split(' | ')[0:length]))
-        bot.reply(' | '.join(reply.split(' | ')[length:]))
+        bot.say(' | '.join(reply.split(' | ')[0:length]))
+        bot.say(' | '.join(reply.split(' | ')[length:]))
         return
     else:
-        return bot.reply(reply)
+        return bot.say(reply)
