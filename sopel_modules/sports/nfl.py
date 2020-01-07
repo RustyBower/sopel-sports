@@ -5,6 +5,9 @@ from __future__ import unicode_literals, absolute_import, print_function, divisi
 from sopel.formatting import bold, color, colors
 from sopel.module import commands, example
 
+from datetime import datetime
+from dateutil.parser import parse
+
 import re
 import requests
 import xml.etree.ElementTree as ET
@@ -163,51 +166,55 @@ def nfl(bot, trigger):
     """.nfl <team/all> - Show current game score or next game for an optionally specified team."""
     team = trigger.group(2)
 
-    # Get current/all scores
-    if not team or team.lower() == 'all':
-        # Check Regular Season Games
-        r = requests.get('http://www.nfl.com/liveupdate/scorestrip/ss.xml')
+    # Figure out if we're in regular or postseason
+    r = requests.get('http://www.nfl.com/liveupdate/scorestrip/ss.xml')
+    root = ET.fromstring(r.text)
+
+    # If week is 17 and it's been a day since the last game, display postseason
+    if root[0].attrib['w'] == '17' and (datetime.now() - parse(root[0].findall('g')[-1].attrib['eid'][:8])).days > 1:
+        # Postseason Games
+        r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
         root = ET.fromstring(r.text)
-
-        # I think there's a bug here when the London games happen. Since we're assuming 1:00 is in PM
-        # Get current games
-        if not team:
-            reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['q'] != 'F' if game.attrib['q'] != 'FO' if game.attrib['q'] != 'P'])
-        # Get all games
-        else:
-            reply = ' | '.join([parse_game(game) for game in root.iter('g')])
-
-        # Split the message if it's > 200 characters
-        if len(reply) > 200:
-            length = int(len(reply.split(' | ')) / 2)
-            bot.say(' | '.join(reply.split(' | ')[0:length]))
-            bot.say(' | '.join(reply.split(' | ')[length:]))
-        else:
-            bot.say(reply)
-        return
-
-    # Get score for specific team
+        # Do some janky sorting because the postseason API gives us games out of order
+        sorted_games = sorted(root.iter('g'), key=lambda game: game.get('eid'))
+        # Get games within 7 days and no older than 3 days
+        reply = ' | '.join([parse_game(game) for game in sorted_games if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
+        return bot.reply(reply)
+    # Otherwise, it's regular season
     else:
-        # If initial aren't specified, try to guess what team it is
-        match = re.match(r'^\S{2,3}$', team)
-        if not match:
-            for k, v in nfl_teams.items():
-                if team.lower() == v.team.lower() or team.lower() == v.city.lower() or team.lower() == '{0} {1}'.format(v.city.lower(), v.team.lower()):
-                    team = k
+        # Get current/all scores
+        if not team or team.lower() == 'all':
+            # I think there's a bug here when the London games happen. Since we're assuming 1:00 is in PM
+            # Get current games
+            if not team:
+                reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['q'] != 'F' if game.attrib['q'] != 'FO' if game.attrib['q'] != 'P'])
+            # Get all games
+            else:
+                reply = ' | '.join([parse_game(game) for game in root.iter('g')])
 
-        # Check Regular Season Games
-        r = requests.get('http://www.nfl.com/liveupdate/scorestrip/ss.xml')
-        root = ET.fromstring(r.text)
+            # Split the message if it's > 200 characters
+            if len(reply) > 200:
+                length = int(len(reply.split(' | ')) / 2)
+                bot.say(' | '.join(reply.split(' | ')[0:length]))
+                bot.say(' | '.join(reply.split(' | ')[length:]))
+            else:
+                bot.say(reply)
+            return
 
-        game = root.find("./gms/g[@h='{}']".format(team.upper()))
-        if game is None:
-            game = root.find("./gms/g[@v='{}']".format(team.upper()))
-
-        if game is not None:
-            return bot.reply(parse_game(game))
+        # Get score for specific team
         else:
-            return bot.reply('Team Not Found')
+            # If initial aren't specified, try to guess what team it is
+            match = re.match(r'^\S{2,3}$', team)
+            if not match:
+                for k, v in nfl_teams.items():
+                    if team.lower() == v.team.lower() or team.lower() == v.city.lower() or team.lower() == '{0} {1}'.format(v.city.lower(), v.team.lower()):
+                        team = k
 
-    # TODO - Check Postseason Games
-    # r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
-    # return say_info(bot, trigger, 'sports')
+            game = root.find("./gms/g[@h='{}']".format(team.upper()))
+            if game is None:
+                game = root.find("./gms/g[@v='{}']".format(team.upper()))
+
+            if game is not None:
+                return bot.reply(parse_game(game))
+            else:
+                return bot.reply('Team Not Found')
