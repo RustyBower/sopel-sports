@@ -8,4 +8,4 @@ from .mlb import mlb
 
 __author__ = 'Rusty Bower'
 __email__ = 'rusty@rustybower.com'
-__version__ = '1.1.3'
+__version__ = '1.1.4'
