@@ -9,9 +9,9 @@ from sopel.module import commands, example
 
 def parse_games(date):
     if date:
-        r = requests.get('https://statsapi.web.nhl.com/api/v1/schedule?date={}'.format(date))
+        r = requests.get('https://statsapi.web.nhl.com/api/v1/schedule?date={}&expand=schedule.linescore'.format(date))
     else:
-        r = requests.get('https://statsapi.web.nhl.com/api/v1/schedule')
+        r = requests.get('https://statsapi.web.nhl.com/api/v1/schedule?expand=schedule.linescore')
     reply = []
     for date in r.json()['dates']:
         # TODO - Figure out what events and matches are
@@ -48,6 +48,16 @@ def parse_games(date):
                         game['teams']['home']['team']['name'],
                         game['teams']['home']['score'],
                     ))
+            elif game['status']['abstractGameState'] == 'Live':
+                reply.append('{} {} {} {} {} {}'.format(
+                    game['teams']['away']['team']['name'],
+                    game['teams']['away']['score'],
+                    game['teams']['home']['team']['name'],
+                    game['teams']['home']['score'],
+                    game['linescore']['currentPeriodOrdinal'],
+                    game['linescore']['currentPeriodTimeRemaining'],
+                ))
+
     return reply
 
 

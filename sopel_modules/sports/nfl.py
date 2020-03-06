@@ -175,6 +175,7 @@ def nfl(bot, trigger):
         # Postseason Games
         r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
         root = ET.fromstring(r.text)
+
         # Get games within 7 days and no older than 3 days
         reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
         return bot.reply(reply)
