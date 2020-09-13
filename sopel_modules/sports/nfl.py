@@ -52,6 +52,7 @@ nfl_teams = {
     'JAC': NFLTeam('Jacksonville', 'Jaguars', colors.WHITE, colors.BLUE, 'Jacksonville Municipal Stadium', 'JAX'),
     'JAX': NFLTeam('Jacksonville', 'Jaguars', colors.WHITE, colors.BLUE, 'Jacksonville Municipal Stadium', 'JAX'),
     'KC': NFLTeam('Kansas City', 'Chiefs', colors.WHITE, colors.RED, 'Arrowhead Stadium', 'KC'),
+    'LV': NFLTeam('Las Vegas', 'Raiders', colors.BLACK, colors.WHITE, 'Allegiant Stadium', 'LV'),
     'LA': NFLTeam('Los Angeles', 'Rams', colors.BLUE, colors.ORANGE, 'Edward Jones Dome', 'LA'),
     'LAC': NFLTeam('Los Angeles', 'Chargers', colors.YELLOW, colors.BLUE, 'Qualcomm Stadium', 'LAC'),
     'MIA': NFLTeam('Miami', 'Dolphins', colors.ORANGE, colors.TEAL, 'Land Shark Stadium', 'MIA'),
@@ -167,7 +168,7 @@ def nfl(bot, trigger):
     team = trigger.group(2)
 
     # Figure out if we're in regular or postseason
-    r = requests.get('http://www.nfl.com/liveupdate/scorestrip/ss.xml')
+    r = requests.get('http://static.nfl.com/liveupdate/scorestrip/ss.xml')
     root = ET.fromstring(r.text)
 
     # If week is 17 and it's been a day since the last game, display postseason
