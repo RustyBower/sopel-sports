@@ -177,9 +177,29 @@ def nfl(bot, trigger):
         r = requests.get('http://static.nfl.com/liveupdate/scorestrip/postseason/ss.xml')
         root = ET.fromstring(r.text)
 
-        # Get games within 7 days and no older than 3 days
-        reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
-        return bot.reply(reply)
+        # Get current/all scores
+        if not team or team.lower() == 'all':
+            # Get games within 7 days and no older than 3 days
+            reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
+            return bot.reply(reply)
+        # Get score for specific team
+        else:
+            # If initial aren't specified, try to guess what team it is
+            match = re.match(r'^\S{2,3}$', team)
+            if not match:
+                for k, v in nfl_teams.items():
+                    if team.lower() == v.team.lower() or team.lower() == v.city.lower() or team.lower() == '{0} {1}'.format(v.city.lower(), v.team.lower()):
+                        team = k
+
+            game = root.find("./gms/g[@h='{}']".format(team.upper()))
+            if game is None:
+                game = root.find("./gms/g[@v='{}']".format(team.upper()))
+
+            if game is not None:
+                return bot.reply(parse_game(game))
+            else:
+                return bot.reply('Team Not Found')
+
     # Otherwise, it's regular season
     else:
         # Get current/all scores
