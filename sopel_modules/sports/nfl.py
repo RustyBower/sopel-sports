@@ -181,7 +181,8 @@ def nfl(bot, trigger):
         if not team or team.lower() == 'all':
             # Get games within 7 days and no older than 3 days
             reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
-            return bot.say(reply)
+            if reply:
+                return bot.say(reply)
         # Get score for specific team
         else:
             # If initial aren't specified, try to guess what team it is
@@ -212,14 +213,14 @@ def nfl(bot, trigger):
             else:
                 reply = ' | '.join([parse_game(game) for game in root.iter('g')])
 
-            # Split the message if it's > 200 characters
-            if len(reply) > 200:
-                length = int(len(reply.split(' | ')) / 2)
-                bot.say(' | '.join(reply.split(' | ')[0:length]))
-                bot.say(' | '.join(reply.split(' | ')[length:]))
-            else:
-                bot.say(reply)
-            return
+            if reply:
+                # Split the message if it's > 200 characters
+                if len(reply) > 200:
+                    length = int(len(reply.split(' | ')) / 2)
+                    bot.say(' | '.join(reply.split(' | ')[0:length]))
+                    bot.say(' | '.join(reply.split(' | ')[length:]))
+                else:
+                    bot.say(reply)
 
         # Get score for specific team
         else:
