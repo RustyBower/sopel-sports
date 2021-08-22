@@ -181,7 +181,7 @@ def nfl(bot, trigger):
         if not team or team.lower() == 'all':
             # Get games within 7 days and no older than 3 days
             reply = ' | '.join([parse_game(game) for game in root.iter('g') if game.attrib['h'] != 'TBD' if game.attrib['v'] != 'TBD' if (datetime.now() - parse(game.attrib['eid'][:8])).days >= -7 if (datetime.now() - parse(game.attrib['eid'][:8])).days <= 3])
-            return bot.reply(reply)
+            return bot.say(reply)
         # Get score for specific team
         else:
             # If initial aren't specified, try to guess what team it is
@@ -196,9 +196,9 @@ def nfl(bot, trigger):
                 game = root.find("./gms/g[@v='{}']".format(team.upper()))
 
             if game is not None:
-                return bot.reply(parse_game(game))
+                return bot.say(parse_game(game))
             else:
-                return bot.reply('Team Not Found')
+                return bot.say('Team Not Found')
 
     # Otherwise, it's regular season
     else:
@@ -235,6 +235,6 @@ def nfl(bot, trigger):
                 game = root.find("./gms/g[@v='{}']".format(team.upper()))
 
             if game is not None:
-                return bot.reply(parse_game(game))
+                return bot.say(parse_game(game))
             else:
-                return bot.reply('Team Not Found')
+                return bot.say('Team Not Found')
