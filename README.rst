@@ -2,7 +2,7 @@
 sopel-sports
 ============
 
-|version| |build| |issues| |alerts| |coverage-status| |license|
+|version| |build| |issues| |alerts| |quality| |coverage-status| |license|
 
 Introduction
 ============
@@ -59,6 +59,8 @@ Python Requirements
    :target: https://travis-ci.com/RustyBower/sopel-sports/issues
 .. |alerts| image:: https://img.shields.io/lgtm/alerts/g/RustyBower/sopel-sports.svg
    :target: https://lgtm.com/projects/g/RustyBower/sopel-sports/alerts/
+.. |quality| image:: https://img.shields.io/lgtm/grade/python/g/RustyBower/sopel-sports.svg
+   :target: https://lgtm.com/projects/g/RustyBower/sopel-sports/context:python
 .. |coverage-status| image:: https://coveralls.io/repos/github/RustyBower/sopel-sports/badge.svg?branch=master
    :target: https://coveralls.io/github/RustyBower/sopel-sports?branch=master
 .. |license| image:: https://img.shields.io/pypi/l/sopel-modules.sports.svg
