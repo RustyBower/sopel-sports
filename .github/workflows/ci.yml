@@ -39,24 +39,24 @@ jobs:
       #   run: python setup.py develop
       # - name: Run pytest
       #   run: make test_norecord
-      - name: Generate coverage report
-        run: coverage report
-      - name: Upload coverage data to coveralls.io
-        run: coveralls --service=github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
-          COVERALLS_PARALLEL: true
+  #     - name: Generate coverage report
+  #       run: coverage html
+  #     - name: Upload coverage data to coveralls.io
+  #       run: coveralls --service=github
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
+  #         COVERALLS_PARALLEL: true
 
-  coveralls:
-    name: Finalize job on coveralls.io
-    needs: tests
-    runs-on: ubuntu-latest
-    container: python:3-slim
-    steps:
-      - name: Notify coveralls.io
-        run: |
-          pip install --upgrade coveralls
-          coveralls --finish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # coveralls:
+  #   name: Finalize job on coveralls.io
+  #   needs: tests
+  #   runs-on: ubuntu-latest
+  #   container: python:3-slim
+  #   steps:
+  #     - name: Notify coveralls.io
+  #       run: |
+  #         pip install --upgrade coveralls
+  #         coveralls --finish
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
