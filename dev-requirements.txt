@@ -1,0 +1,1 @@
+coveralls>=2.0
