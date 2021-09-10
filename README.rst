@@ -53,8 +53,8 @@ Python Requirements
 
 .. |version| image:: https://img.shields.io/pypi/v/sopel-modules.sports.svg
    :target: https://pypi.python.org/pypi/sopel-modules.sports
-.. |build| image:: https://travis-ci.com/RustyBower/sopel-sports.svg?branch=master
-   :target: https://travis-ci.com/RustyBower/sopel-sports
+.. |build| image:: https://github.com/RustyBower/sopel-sports/actions/workflows/ci.yml/badge.svg?branch=master
+   :target: https://github.com/RustyBower/sopel-sports/actions/workflows/ci.yml
 .. |issues| image:: https://img.shields.io/github/issues/RustyBower/sopel-sports.svg
    :target: https://travis-ci.com/RustyBower/sopel-sports/issues
 .. |alerts| image:: https://img.shields.io/lgtm/alerts/g/RustyBower/sopel-sports.svg
