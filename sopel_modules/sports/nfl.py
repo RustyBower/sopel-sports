@@ -2,7 +2,7 @@
 # Copyright 2019, Rusty Bower, rustybower.com
 from __future__ import unicode_literals, absolute_import, print_function, division
 
-from sopel.formatting import bold, hex_color
+from sopel.formatting import bold
 from sopel.module import commands, example
 from sopel.tools.time import get_nick_timezone
 
@@ -99,60 +99,60 @@ def parse_game(game, timezone=None):
     if "detail" not in game.keys():
         # DEN @ NYG Sun 4:25 PM EDT
         return "{} @ {} {}".format(
-            hex_color(
-                game["awayTeam"]["abbreviation"],
-                game["awayTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["awayTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),  # Away team w/ colors
-            hex_color(
-                game["homeTeam"]["abbreviation"],
-                game["homeTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["homeTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),  # Home team with colors
+            game["awayTeam"]["abbreviation"],
+            game["homeTeam"]["abbreviation"],
             game_time,
         )
 
-    # Halftime or Final
-    elif game["detail"]["phase"] in [
-        "HALFTIME",
-        "FINAL",
-    ]:  # TODO - Capture Final Overtime
+    # Halftime
+    elif game["detail"]["phase"] == "HALFTIME":
         # DEN 0 KC 6 Halftime
-        # KC 17 JAX 7 Final
-        # KC 17 JAX 7 Final OT
         return "{} {} {} {} {}".format(
-            hex_color(
-                game["awayTeam"]["abbreviation"],
-                game["awayTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["awayTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),  # Away team w/ colors
-            game["detail"]["visitorPointsTotal"],  # Away team score
-            hex_color(
-                game["homeTeam"]["abbreviation"],
-                game["homeTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["homeTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),  # Home team with colors
+            game["awayTeam"]["abbreviation"],
+            game["detail"]["visitorPointsTotal"],
+            game["homeTeam"]["abbreviation"],
             game["detail"]["homePointsTotal"],
             game["detail"]["phase"],
         )
+
+    # Final
+    elif game["detail"]["phase"] == "FINAL":  # TODO - Figure out Final Overtime
+        # KC 17 JAX 7 Final
+        # KC 17 JAX 7 Final OT
+        if game["detail"]["visitorPointsTotal"] > game["detail"]["homePointsTotal"]:
+            return "{} {} {} {} {}".format(
+                bold(game["awayTeam"]["abbreviation"]),
+                bold(str(game["detail"]["visitorPointsTotal"])),
+                game["homeTeam"]["abbreviation"],
+                game["detail"]["homePointsTotal"],
+                game["detail"]["phase"],
+            )
+        elif game["detail"]["visitorPointsTotal"] < game["detail"]["homePointsTotal"]:
+            return "{} {} {} {} {}".format(
+                game["awayTeam"]["abbreviation"],
+                game["detail"]["visitorPointsTotal"],
+                bold(game["homeTeam"]["abbreviation"]),
+                bold(str(game["detail"]["homePointsTotal"])),
+                game["detail"]["phase"],
+            )
+        else:
+            return "{} {} {} {} {}".format(
+                game["awayTeam"]["abbreviation"],
+                game["detail"]["visitorPointsTotal"],
+                game["homeTeam"]["abbreviation"],
+                game["detail"]["homePointsTotal"],
+                game["detail"]["phase"],
+            )
 
     # In Progress
     else:
         # DEN 0 KC 6 09:42 Q1
         return "{} {} {} {} {} Q{}".format(
-            hex_color(
-                game["awayTeam"]["abbreviation"],
-                game["awayTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["awayTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),
-            game["detail"]["visitorPointsTotal"],  # Away Team Score
-            hex_color(
-                game["homeTeam"]["abbreviation"],
-                game["homeTeam"]["primaryColor"].strip("#"),  # Strip leading #
-                game["homeTeam"]["secondaryColor"].strip("#"),  # Strip leading #
-            ),
-            game["detail"]["homePointsTotal"],  # Home Team Score
-            game["detail"]["gameClock"],  # Game Clock
+            game["awayTeam"]["abbreviation"],
+            game["detail"]["visitorPointsTotal"],
+            game["homeTeam"]["abbreviation"],
+            game["detail"]["homePointsTotal"],
+            game["detail"]["gameClock"],
             game["detail"]["period"],
         )
 
