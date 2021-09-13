@@ -117,6 +117,8 @@ def parse_game(game, timezone=None):
 
     # Final || Final Overtime
     elif game["detail"]["phase"] in ["FINAL", "FINAL_OVERTIME"]:
+        phase = "Final" if game["detail"]["phase"] == "FINAL" else "Final OT"
+
         # KC 17 JAX 7 Final
         # KC 17 JAX 7 Final OT
         if game["detail"]["visitorPointsTotal"] > game["detail"]["homePointsTotal"]:
@@ -125,7 +127,7 @@ def parse_game(game, timezone=None):
                 bold(str(game["detail"]["visitorPointsTotal"])),
                 game["homeTeam"]["abbreviation"],
                 game["detail"]["homePointsTotal"],
-                game["detail"]["phase"],
+                phase,
             )
         elif game["detail"]["visitorPointsTotal"] < game["detail"]["homePointsTotal"]:
             return "{} {} {} {} {}".format(
@@ -133,7 +135,7 @@ def parse_game(game, timezone=None):
                 game["detail"]["visitorPointsTotal"],
                 bold(game["homeTeam"]["abbreviation"]),
                 bold(str(game["detail"]["homePointsTotal"])),
-                game["detail"]["phase"],
+                phase,
             )
         else:
             return "{} {} {} {} {}".format(
@@ -141,7 +143,7 @@ def parse_game(game, timezone=None):
                 game["detail"]["visitorPointsTotal"],
                 game["homeTeam"]["abbreviation"],
                 game["detail"]["homePointsTotal"],
-                game["detail"]["phase"],
+                phase,
             )
 
     # In Progress
