@@ -77,9 +77,52 @@ def get_games(bot, current_week) -> dict:
         f"https://api.nfl.com/experience/v1/games?season={season}&seasonType={seasonType}&week={week}",
         headers=headers,
     )
-
     # TODO - Handle API errors
-    return r.json()["games"]
+    games = r.json()["games"]
+
+    # Update in progress games
+    # games = update_inprogress(bot, games)
+    games = update_inprogress(bot, games)
+    return games
+
+
+# The /games api seems to cache randomly, and additional updates are provided via the ?query endpoint
+def update_inprogress(bot, games):
+    headers = {
+        "Content-type": "application/json",
+        "Authorization": "Bearer {}".format(get_token(bot)),
+    }
+
+    game_ids = [game["detail"]["id"] for game in games if "detail" in game.keys()]
+    game_ids = json.dumps(game_ids, separators=(",", ":"))
+
+    query = (
+        "query%7Bviewer%7BgameDetailsByIds(ids%3A"
+        + game_ids
+        + ")%7Bid%20gameClock%20period%20homeTeam%7Bid%20abbreviation%7DvisitorTeam%7Bid%20abbreviation%7DhomePointsTotal%20visitorPointsTotal%20%7D%7D%7D&variables=null"
+    )
+
+    r = requests.get(
+        f"https://api.nfl.com/v3/shield/?query={query}",
+        headers=headers,
+    )
+
+    active_games = [
+        game
+        for game in games
+        if "detail" in game.keys()
+        if game["detail"]["phase"] not in ["FINAL", "FINAL_OVERTIME"]
+    ]
+
+    gameDetails = r.json()["data"]["viewer"]["gameDetailsByIds"]
+
+    # Update ongoing games
+    for i, game in enumerate(active_games):
+        for gameDetail in gameDetails:
+            if game["detail"]["id"] == gameDetail["id"]:
+                games[i]["detail"] = game["detail"].update(gameDetail)
+
+    return games
 
 
 def parse_game(game, timezone=None):
@@ -194,7 +237,13 @@ def nfl(bot, trigger):
         active_games = [
             game
             for game in games
+            if arrow.utcnow()
+            > arrow.get(
+                game["time"]
+            )  # Only grab games that are scheduled to have already started
             if "detail" in game.keys()
+            if game["detail"]
+            if game["detail"]["phase"]
             if game["detail"]["phase"] not in ["FINAL", "FINAL_OVERTIME"]
         ]
 
