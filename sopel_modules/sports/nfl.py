@@ -115,8 +115,8 @@ def parse_game(game, timezone=None):
             game["detail"]["phase"],
         )
 
-    # Final
-    elif game["detail"]["phase"] == "FINAL":  # TODO - Figure out Final Overtime
+    # Final || Final Overtime
+    elif game["detail"]["phase"] in ["FINAL", "FINAL_OVERTIME"]:
         # KC 17 JAX 7 Final
         # KC 17 JAX 7 Final OT
         if game["detail"]["visitorPointsTotal"] > game["detail"]["homePointsTotal"]:
@@ -193,7 +193,7 @@ def nfl(bot, trigger):
             game
             for game in games
             if "detail" in game.keys()
-            if game["detail"]["phase"] not in ["FINAL"]
+            if game["detail"]["phase"] not in ["FINAL", "FINAL_OVERTIME"]
         ]
 
         # Split across multiple lines if we have enough games
