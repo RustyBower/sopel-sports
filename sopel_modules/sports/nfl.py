@@ -143,7 +143,7 @@ def parse_game(game, timezone=None):
     # Scheduled Games
     # If detail isn't in the game json, the game hasn't started yet
     # There appears to be a bug in the API setting 'detail' to None for past game (Week 1 - TB v Dallas)
-    if "detail" not in game.keys() or game["detail"] == None:
+    if "detail" not in game.keys() or game["detail"] is None:
         # DEN @ NYG Sun 4:25 PM EDT
         return "{} @ {} {}".format(
             game["awayTeam"]["abbreviation"],
