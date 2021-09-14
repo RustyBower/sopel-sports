@@ -54,8 +54,11 @@ def get_current_week(bot) -> dict:
         "Authorization": "Bearer {}".format(get_token(bot)),
     }
 
+    current_date = arrow.utcnow().format("YYYY-MM-DD")
+
     r = requests.get(
-        "https://api.nfl.com/football/v2/weeks/date/2021-09-08", headers=headers
+        "https://api.nfl.com/football/v2/weeks/date/{}".format(current_date),
+        headers=headers,
     )
 
     # TODO - Handle API errors
@@ -214,6 +217,7 @@ def nfl(bot, trigger):
     timezone = get_nick_timezone(bot.db, trigger.nick)
 
     current_week = get_current_week(bot)
+    # TODO - Handle Bye Games
     games = get_games(bot, current_week)
 
     # Active games
@@ -249,6 +253,7 @@ def nfl(bot, trigger):
         ]
 
         # Split across multiple lines if we have enough games
+        # TODO - Keep all these in a single var so we don't make 3 calls to parse_game
         bot.say(" | ".join([parse_game(game, timezone) for game in active_games][0:7]))
         if len(active_games) >= 8:
             bot.say(
@@ -263,6 +268,7 @@ def nfl(bot, trigger):
     # If all is specified, return all teams
     elif team.lower() == "all":
         # Split across multiple lines if we have enough games
+        # TODO - Keep all these in a single var so we don't make 3 calls to parse_game
         bot.say(" | ".join([parse_game(game, timezone) for game in games][0:7]))
         if len(games) >= 8:
             bot.say(" | ".join([parse_game(game, timezone) for game in games][7:14]))
