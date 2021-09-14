@@ -220,23 +220,6 @@ def nfl(bot, trigger):
     # TODO - Handle Bye Games
     games = get_games(bot, current_week)
 
-    # Active games
-    """
-    https://developer.sportradar.com/docs/read/american_football/NFL_v6#frequently-asked-questions
-
-    scheduled – The game is scheduled to occur.
-    created – Game data (rosters, officials, etc) are being pre-loaded in preparation for the game.
-    inprogress – The game is in progress.
-    halftime – The game is currently at halftime.
-    complete – The game is over, but stat validation is not complete.
-    closed – The game is over and the stats have been validated.
-    cancelled – The game has been cancelled. No makeup game will be played as a result.
-    postponed – The game has been postponed, to be made up at another day and time. Once the makeup game is announced, a new game and ID will be created and scheduled on the announced makeup date. You should request the scheduled feed(s) regularly to identify the re-scheduled makeup game(s).
-    delayed – The scheduled game, or a game that was in progress, is now delayed for some reason.
-    flex-schedule – The game is currently scheduled to occur on a specific date and time, however, it will more than likely be moved to a different time for broadcast purposes.
-    time-tbd – The game has been scheduled, but a time has yet to be announced.
-    """
-
     # If no team is specified, only return active games
     if not team:
         active_games = [
