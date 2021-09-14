@@ -4,3 +4,4 @@ mock
 pycodestyle
 pytest
 pytest-cov
+requests-mock
