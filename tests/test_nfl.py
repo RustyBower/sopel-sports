@@ -1,4 +1,5 @@
 from sopel_modules.sports.nfl import get_current_week, get_token, parse_game
+from sopel.tests import rawlist
 
 import json
 import pytest
@@ -452,6 +453,7 @@ owner = testnick
 nick = TestBot
 enable =
     coretasks
+    sports
 """
 
 
@@ -462,7 +464,12 @@ def tmpconfig(configfactory):
 
 @pytest.fixture
 def mockbot(tmpconfig, botfactory):
-    return botfactory(tmpconfig)
+    return botfactory.preloaded(tmpconfig, preloads=["sports"])
+
+
+@pytest.fixture
+def irc(mockbot, ircfactory):
+    return ircfactory(mockbot)
 
 
 def test_parse_game_scheduled():
@@ -503,14 +510,13 @@ def test_get_token(mockbot):
 
 
 def test_get_token_from_memory(mockbot):
-    with requests_mock.Mocker() as mock:
-        mockbot.memory["accessToken"] = "1234567890"
+    mockbot.memory["accessToken"] = "1234567890"
 
-        mockbot.memory["expiresIn"] = (
-            int(time.time()) + 3600
-        )  # Set an expiration an hour into the future
+    mockbot.memory["expiresIn"] = (
+        int(time.time()) + 3600
+    )  # Set an expiration an hour into the future
 
-        assert get_token(mockbot) == "1234567890"
+    assert get_token(mockbot) == "1234567890"
 
 
 def test_get_week(mockbot):
@@ -530,3 +536,42 @@ def test_get_week(mockbot):
             get_current_week(mockbot)
             == "{'season': 2021, 'seasonType': 'REG', 'week': 1, 'byeTeams': [], 'dateBegin': '2021-09-01', 'dateEnd': '2021-09-15', 'weekType': 'REG'}"
         )
+
+
+# def test_nfl(irc, userfactory, mockbot):
+#     user = userfactory("TestUser")
+#     irc.pm(user, ".nfl")
+
+#     mockbot.memory["accessToken"] = "1234567890"
+
+#     mockbot.memory["expiresIn"] = (
+#         int(time.time()) + 3600
+#     )  # Set an expiration an hour into the future
+
+#     with requests_mock.Mocker() as mock:
+#         mock.get(
+#             "https://api.nfl.com/football/v2/weeks/date/2021-09-08",
+#             json="{'season': 2021, 'seasonType': 'REG', 'week': 1, 'byeTeams': [], 'dateBegin': '2021-09-01', 'dateEnd': '2021-09-15', 'weekType': 'REG'}",
+#         )
+
+#     assert irc.bot.backend.message_sent[0] == rawlist(
+#         "PRIVMSG Exirel :Here is my list of commands:",
+#     )[0]
+
+
+# def test_nfl_den(irc, userfactory, mockbot):
+#     user = userfactory("TestUser")
+#     irc.pm(user, ".nfl all")
+
+#     assert irc.bot.backend.message_sent[0] == rawlist(
+#         "PRIVMSG Exirel :Here is my list of commands:",
+#     )[0]
+
+
+# def test_nfl_all(irc, userfactory, mockbot):
+#     user = userfactory("TestUser")
+#     irc.pm(user, ".nfl all")
+
+#     assert irc.bot.backend.message_sent[0] == rawlist(
+#         "PRIVMSG Exirel :Here is my list of commands:",
+#     )[0]
