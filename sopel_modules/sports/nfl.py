@@ -49,6 +49,17 @@ def get_token(bot):
 
 
 def get_current_week(bot) -> dict:
+    """
+    {
+        "season": 2021,
+        "seasonType": "REG",
+        "week": 2,
+        "byeTeams": [],
+        "dateBegin": "2021-09-15",
+        "dateEnd": "2021-09-22",
+        "weekType": "REG"
+    }
+    """
     headers = {
         "Content-type": "application/json",
         "Authorization": "Bearer {}".format(get_token(bot)),
