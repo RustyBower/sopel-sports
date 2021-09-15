@@ -41,11 +41,8 @@ def get_token(bot):
         bot.memory["expiresIn"] = r.json()["expiresIn"]
         bot.memory["accessToken"] = r.json()["accessToken"]
 
-        # Return access token to the bot
-        return r.json()["accessToken"]
-    # Otherwise, return existing token in memory
-    else:
-        return bot.memory.get("accessToken")
+    # Return access token to the bot
+    return bot.memory.get("accessToken")
 
 
 def get_current_week(bot) -> dict:
