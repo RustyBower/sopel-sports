@@ -7,10 +7,7 @@ from sopel.module import commands, example
 from sopel.tools.time import get_nick_timezone
 
 import arrow
-import json
 import requests
-import time
-import uuid
 
 
 '''
