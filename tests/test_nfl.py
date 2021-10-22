@@ -538,6 +538,16 @@ def test_get_week(mockbot):
         )
 
 
+def test_nfl(irc, userfactory):
+    user = userfactory("TestUser")
+    irc.pm(user, ".nfl")
+
+    assert irc.bot.backend.message_sent[0] == rawlist(
+        "PRIVMSG Exirel :Here is my list of commands:",
+    )[0]
+    assert len(irc.bot.backend.message_sent) > 1, "More than one line expected"
+
+
 # def test_nfl(irc, userfactory, mockbot):
 #     user = userfactory("TestUser")
 #     irc.pm(user, ".nfl")
