@@ -13,6 +13,7 @@ import time
 import uuid
 
 
+'''
 def get_token(bot):
     # Get token expiration time (or 0 if we haven't saved it yet)
     expiresIn = bot.memory.get("expiresIn", 0)
@@ -134,70 +135,103 @@ def update_inprogress(bot, games):
                 games[i]["detail"] = game["detail"].update(gameDetail)
 
     return games
+'''
+
+
+def get_games(bot) -> list:
+    r = requests.get(
+        "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+    )
+    data = r.json()
+
+    # TODO - Handle API errors
+    games = data["events"]
+
+    return games
 
 
 def parse_game(game, timezone=None):
     # Localize to user timezone if possible
     if timezone:
         game_time = (
-            arrow.get(game["time"]).to(timezone).format("ddd h:mm A ZZZ")
+            arrow.get(game["date"]).to(timezone).format("ddd h:mm A ZZZ")
         )  # Mon 3:25 PM CDT
     # Otherwise, default to US/Eastern
     else:
         game_time = (
-            arrow.get(game["time"]).to("US/Eastern").format("ddd h:mm A ZZZ")
+            arrow.get(game["date"]).to("US/Eastern").format("ddd h:mm A ZZZ")
         )  # Mon 4:25 PM EST
 
     # Scheduled Games
-    # If detail isn't in the game json, the game hasn't started yet
-    # There appears to be a bug in the API setting 'detail' to None for past game (Week 1 - TB v Dallas)
-    if "detail" not in game.keys() or game["detail"] is None:
+    if game["status"]["type"]["name"] == "STATUS_SCHEDULED":
         # DEN @ NYG Sun 4:25 PM EDT
         return "{} @ {} {}".format(
-            game["awayTeam"]["abbreviation"],
-            game["homeTeam"]["abbreviation"],
+            game["competitions"][0]["competitors"][1]["team"][
+                "abbreviation"
+            ],  # Is 1 away? Otherwise, need to list comprehension to filter
+            game["competitions"][0]["competitors"][0]["team"]["abbreviation"],
             game_time,
         )
 
     # Halftime
-    elif game["detail"]["phase"] == "HALFTIME":
+    elif game["status"]["type"]["name"] == "STATUS_HALFTIME":
         # DEN 0 KC 6 Halftime
         return "{} {} {} {} {}".format(
-            game["awayTeam"]["abbreviation"],
-            game["detail"]["visitorPointsTotal"],
-            game["homeTeam"]["abbreviation"],
-            game["detail"]["homePointsTotal"],
-            game["detail"]["phase"],
+            game["competitions"][0]["competitors"][1]["team"]["abbreviation"],  # Away
+            game["competitions"][0]["competitors"][1]["score"],
+            game["competitions"][0]["competitors"][0]["team"]["abbreviation"],  # Home
+            game["competitions"][0]["competitors"][0]["score"],
+            game["status"]["type"]["description"],
         )
 
     # Final || Final Overtime
-    elif game["detail"]["phase"] in ["FINAL", "FINAL_OVERTIME"]:
-        phase = "Final" if game["detail"]["phase"] == "FINAL" else "Final OT"
+    elif game["status"]["type"]["name"] in ["STATUS_FINAL", "STATUS_FINAL_OVERTIME"]:
+        phase = (
+            "Final" if game["status"]["type"]["name"] == "STATUS_FINAL" else "Final OT"
+        )
 
         # KC 17 JAX 7 Final
         # KC 17 JAX 7 Final OT
-        if game["detail"]["visitorPointsTotal"] > game["detail"]["homePointsTotal"]:
+        if (
+            game["competitions"][0]["competitors"][1]["score"]
+            > game["competitions"][0]["competitors"][0]["score"]
+        ):
             return "{} {} {} {} {}".format(
-                bold(game["awayTeam"]["abbreviation"]),
-                bold(str(game["detail"]["visitorPointsTotal"])),
-                game["homeTeam"]["abbreviation"],
-                game["detail"]["homePointsTotal"],
+                bold(
+                    game["competitions"][0]["competitors"][1]["team"]["abbreviation"]
+                ),  # Away
+                bold(str(game["competitions"][0]["competitors"][1]["score"])),
+                game["competitions"][0]["competitors"][0]["team"][
+                    "abbreviation"
+                ],  # Home
+                game["competitions"][0]["competitors"][0]["score"],
                 phase,
             )
-        elif game["detail"]["visitorPointsTotal"] < game["detail"]["homePointsTotal"]:
+        elif (
+            game["competitions"][0]["competitors"][1]["score"]
+            < game["competitions"][0]["competitors"][0]["score"]
+        ):
             return "{} {} {} {} {}".format(
-                game["awayTeam"]["abbreviation"],
-                game["detail"]["visitorPointsTotal"],
-                bold(game["homeTeam"]["abbreviation"]),
-                bold(str(game["detail"]["homePointsTotal"])),
+                game["competitions"][0]["competitors"][1]["team"][
+                    "abbreviation"
+                ],  # Away
+                game["competitions"][0]["competitors"][1]["score"],
+                bold(
+                    game["competitions"][0]["competitors"][0]["team"]["abbreviation"]
+                ),  # Home
+                bold(str(game["competitions"][0]["competitors"][0]["score"])),
                 phase,
             )
         else:
             return "{} {} {} {} {}".format(
-                game["awayTeam"]["abbreviation"],
-                game["detail"]["visitorPointsTotal"],
-                game["homeTeam"]["abbreviation"],
-                game["detail"]["homePointsTotal"],
+                game["competitions"][0]["competitors"][1]["team"][
+                    "abbreviation"
+                ],  # Away
+                game["competitions"][0]["competitors"][1]["score"],
+                game["competitions"][0]["competitors"][0]["team"][
+                    "abbreviation"
+                ],  # Home
+                game["competitions"][0]["competitors"][0]["score"],
                 phase,
             )
 
@@ -205,12 +239,12 @@ def parse_game(game, timezone=None):
     else:
         # DEN 0 KC 6 09:42 Q1
         return "{} {} {} {} {} Q{}".format(
-            game["awayTeam"]["abbreviation"],
-            game["detail"]["visitorPointsTotal"],
-            game["homeTeam"]["abbreviation"],
-            game["detail"]["homePointsTotal"],
-            game["detail"]["gameClock"],
-            game["detail"]["period"],
+            game["competitions"][0]["competitors"][1]["team"]["abbreviation"],  # Away
+            game["competitions"][0]["competitors"][1]["score"],
+            game["competitions"][0]["competitors"][0]["team"]["abbreviation"],  # Home
+            game["competitions"][0]["competitors"][0]["score"],
+            game["competitions"][0]["status"]["displayClock"],
+            game["competitions"][0]["status"]["period"],
         )
 
 
@@ -224,23 +258,16 @@ def nfl(bot, trigger):
     team = trigger.group(2)
     timezone = get_nick_timezone(bot.db, trigger.nick)
 
-    current_week = get_current_week(bot)
     # TODO - Handle Bye Games
-    games = get_games(bot, current_week)
+    games = get_games(bot)
 
     # If no team is specified, only return active games
     if not team:
         active_games = [
             game
             for game in games
-            if arrow.utcnow()
-            > arrow.get(
-                game["time"]
-            )  # Only grab games that are scheduled to have already started
-            if "detail" in game.keys()
-            if game["detail"]
-            if game["detail"]["phase"]
-            if game["detail"]["phase"] not in ["FINAL", "FINAL_OVERTIME"]
+            if game["status"]["type"]["name"]
+            not in ["STATUS_SCHEDULED", "STATUS_FINAL", "STATUS_FINAL_OVERTIME"]
         ]
 
         # Split across multiple lines if we have enough games
@@ -269,28 +296,28 @@ def nfl(bot, trigger):
 
     # Otherwise, return specific team
     else:
-        team_games = [
-            game
-            for game in games
-            if team.lower()
-            in [
-                game["homeTeam"]["fullName"].lower(),
-                game["homeTeam"]["abbreviation"].lower(),
-                game["homeTeam"]["location"].lower(),
-                game["homeTeam"]["nickName"].lower(),
-                game["awayTeam"]["fullName"].lower(),
-                game["awayTeam"]["abbreviation"].lower(),
-                game["awayTeam"]["location"].lower(),
-                game["awayTeam"]["nickName"].lower(),
-            ]
-        ]
+        team_game = None
 
-        # If a team was found, return data
-        if team_games:
-            # Get first (and hopefully only) element of this list
-            # TODO - Error checking if len(team_games) != 1
-            team_game = team_games[0]
+        for game in games:
+            for competitor in game["competitions"][0]["competitors"]:
+                # if team.lower() in [
+                #     # competitor["team"]["name"],  # Washington Football Team breaks this because they don't have a name?
+                #     competitor["team"]["abbreviation"].lower(),
+                #     competitor["team"]["displayName"].lower(),
+                #     competitor["team"]["shortDisplayName"].lower(),
+                # ]:
+                if any(
+                    team.lower() in x
+                    for x in [
+                        competitor["team"]["abbreviation"].lower(),
+                        competitor["team"]["displayName"].lower(),
+                        competitor["team"]["shortDisplayName"].lower(),
+                    ]
+                ):
+                    team_game = game
 
+        if team_game:
+            print("game found")
             return bot.say(parse_game(team_game, timezone))
         # Otherwise, team not found
         else:
