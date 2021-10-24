@@ -28,7 +28,7 @@ with open("tests/requirements.txt") as dev_requirements_file:
 
 setup(
     name="sopel_modules.sports",
-    version="2.1.0",
+    version="2.1.1",
     description="Sopel Sports Module",
     long_description=readme + "\n\n" + history,
     long_description_content_type="text/x-rst",
