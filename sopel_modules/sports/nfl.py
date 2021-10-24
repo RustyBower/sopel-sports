@@ -297,20 +297,12 @@ def nfl(bot, trigger):
 
         for game in games:
             for competitor in game["competitions"][0]["competitors"]:
-                # if team.lower() in [
-                #     # competitor["team"]["name"],  # Washington Football Team breaks this because they don't have a name?
-                #     competitor["team"]["abbreviation"].lower(),
-                #     competitor["team"]["displayName"].lower(),
-                #     competitor["team"]["shortDisplayName"].lower(),
-                # ]:
-                if any(
-                    team.lower() in x
-                    for x in [
-                        competitor["team"]["abbreviation"].lower(),
-                        competitor["team"]["displayName"].lower(),
-                        competitor["team"]["shortDisplayName"].lower(),
-                    ]
-                ):
+                if team.lower() in [
+                    # competitor["team"]["name"],  # Washington Football Team breaks this because they don't have a name?
+                competitor["team"]["abbreviation"].lower(),
+                competitor["team"]["displayName"].lower(),
+                competitor["team"]["shortDisplayName"].lower(),
+                ]:
                     team_game = game
 
         if team_game:
