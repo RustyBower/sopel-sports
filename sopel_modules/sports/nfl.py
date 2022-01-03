@@ -189,9 +189,8 @@ def parse_game(game, timezone=None):
 
         # KC 17 JAX 7 Final
         # KC 17 JAX 7 Final OT
-        if (
-            game["competitions"][0]["competitors"][1]["score"]
-            > game["competitions"][0]["competitors"][0]["score"]
+        if int(game["competitions"][0]["competitors"][1]["score"]) > int(
+            game["competitions"][0]["competitors"][0]["score"]
         ):
             return "{} {} {} {} {}".format(
                 bold(
@@ -204,9 +203,8 @@ def parse_game(game, timezone=None):
                 game["competitions"][0]["competitors"][0]["score"],
                 phase,
             )
-        elif (
-            game["competitions"][0]["competitors"][1]["score"]
-            < game["competitions"][0]["competitors"][0]["score"]
+        elif int(game["competitions"][0]["competitors"][1]["score"]) < int(
+            game["competitions"][0]["competitors"][0]["score"]
         ):
             return "{} {} {} {} {}".format(
                 game["competitions"][0]["competitors"][1]["team"][
@@ -299,9 +297,9 @@ def nfl(bot, trigger):
             for competitor in game["competitions"][0]["competitors"]:
                 if team.lower() in [
                     # competitor["team"]["name"],  # Washington Football Team breaks this because they don't have a name?
-                competitor["team"]["abbreviation"].lower(),
-                competitor["team"]["displayName"].lower(),
-                competitor["team"]["shortDisplayName"].lower(),
+                    competitor["team"]["abbreviation"].lower(),
+                    competitor["team"]["displayName"].lower(),
+                    competitor["team"]["shortDisplayName"].lower(),
                 ]:
                     team_game = game
 
