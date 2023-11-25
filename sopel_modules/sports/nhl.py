@@ -26,7 +26,7 @@ def parse_games(date):
                     parser.parse(game["startTimeUTC"]).astimezone(pytz.timezone("US/Central")).strftime("%H:%M"),
                 )
             )
-        elif game["gameState"] == "OFF":
+        elif game["gameState"] == "OFF" or game["gameState"] == "FINAL":  # TODO - Figure out OFF vs FINAL
             # Away Team Win
             if int(game["awayTeam"]["score"]) > int(game["homeTeam"]["score"]):
                 reply.append(
