@@ -1,6 +1,7 @@
 # coding=utf-8
 # Copyright 2019, Rusty Bower, rustybower.com
-import arrow
+import datetime
+import pytz
 import requests
 
 from sopel.formatting import bold
@@ -9,75 +10,88 @@ from sopel.module import commands, example
 
 def parse_games(date):
     if date:
-        r = requests.get(
-            "https://statsapi.web.nhl.com/api/v1/schedule?date={}&expand=schedule.linescore".format(
-                date
-            )
-        )
+        r = requests.get(f"https://api-web.nhle.com/v1/score/{date}")
     else:
-        r = requests.get(
-            "https://statsapi.web.nhl.com/api/v1/schedule?expand=schedule.linescore"
-        )
+        r = requests.get("https://api-web.nhle.com/v1/score/now")
     reply = []
-    for date in r.json()["dates"]:
-        # TODO - Figure out what events and matches are
-        for game in date["games"]:
-            # Game Is Not Started
-            if game["status"]["abstractGameState"] == "Preview":
+    for game in r.json()["games"]:
+        # Game Is Not Started
+        if game["gameState"] == "FUT":
+            reply.append(
+                "{} @ {} {}".format(
+                    game["awayTeam"]["abbrev"],
+                    game["homeTeam"]["abbrev"],
+                    datetime.datetime.fromisoformat(game["startTimeUTC"])
+                    .astimezone(pytz.timezone("US/Central"))
+                    .strftime("%H:%M"),
+                )
+            )
+        elif game["gameState"] == "OFF":
+            # Away Team Win
+            if int(game["awayTeam"]["score"]) > int(game["homeTeam"]["score"]):
                 reply.append(
-                    "{} @ {} {}".format(
-                        game["teams"]["away"]["team"]["name"],
-                        game["teams"]["home"]["team"]["name"],
-                        arrow.get(game["gameDate"]).to("US/Eastern").format("HH:mm"),
+                    "{} {} {} {} Final".format(
+                        bold(game["awayTeam"]["abbrev"]),
+                        bold(str(game["awayTeam"]["score"])),
+                        game["homeTeam"]["abbrev"],
+                        str(game["homeTeam"]["score"]),
                     )
                 )
-            elif game["status"]["abstractGameState"] == "Final":
-                # Away Team Win
-                if int(game["teams"]["away"]["score"]) > int(
-                    game["teams"]["home"]["score"]
-                ):
-                    reply.append(
-                        "{} {} {} {} Final".format(
-                            bold(game["teams"]["away"]["team"]["name"]),
-                            bold(str(game["teams"]["away"]["score"])),
-                            game["teams"]["home"]["team"]["name"],
-                            str(game["teams"]["home"]["score"]),
-                        )
+            # Home Team Win
+            elif int(game["homeTeam"]["score"]) > int(game["awayTeam"]["score"]):
+                reply.append(
+                    "{} {} {} {} Final".format(
+                        game["awayTeam"]["abbrev"],
+                        str(game["awayTeam"]["score"]),
+                        bold(game["homeTeam"]["abbrev"]),
+                        bold(str(game["homeTeam"]["score"])),
                     )
-                # Home Team Win
-                elif int(game["teams"]["home"]["score"]) > int(
-                    game["teams"]["away"]["score"]
-                ):
-                    reply.append(
-                        "{} {} {} {} Final".format(
-                            game["teams"]["away"]["team"]["name"],
-                            str(game["teams"]["away"]["score"]),
-                            bold(game["teams"]["home"]["team"]["name"]),
-                            bold(str(game["teams"]["home"]["score"])),
-                        )
+                )
+            # Tie Game
+            else:
+                reply.append(
+                    "{} {} {} {} Final".format(
+                        game["awayTeam"]["abbrev"],
+                        game["awayTeam"]["score"],
+                        game["homeTeam"]["abbrev"],
+                        game["homeTeam"]["score"],
                     )
-                # Tie Game
-                else:
-                    reply.append(
-                        "{} {} {} {} Final".format(
-                            game["teams"]["away"]["team"]["name"],
-                            game["teams"]["away"]["score"],
-                            game["teams"]["home"]["team"]["name"],
-                            game["teams"]["home"]["score"],
-                        )
+                )
+        elif game["gameState"] == "LIVE":
+            if game["period"] == 1:
+                period = "1ST"
+            elif game["period"] == 2:
+                period = "2ND"
+            elif game["period"] == 3:
+                period = "3RD"
+            elif game["period"] == 4:
+                period = "OT"
+            else:  # Otherwise, just OT2, OT3, etc...
+                period = f"OT{game['period']-3}"
+
+            # Print End 1st/2nd/3rd if in intermission
+            if game["clock"]["inIntermission"]:
+                reply.append(
+                    "{} {} {} {} END {}".format(
+                        game["awayTeam"]["abbrev"],
+                        game["awayTeam"]["score"],
+                        game["homeTeam"]["abbrev"],
+                        game["homeTeam"]["score"],
+                        period,
                     )
-            elif game["status"]["abstractGameState"] == "Live":
+                )
+            # Otherwise, print period and time remaining, e.g. 1st 15:07
+            else:
                 reply.append(
                     "{} {} {} {} {} {}".format(
-                        game["teams"]["away"]["team"]["name"],
-                        game["teams"]["away"]["score"],
-                        game["teams"]["home"]["team"]["name"],
-                        game["teams"]["home"]["score"],
-                        game["linescore"]["currentPeriodOrdinal"],
-                        game["linescore"]["currentPeriodTimeRemaining"],
+                        game["awayTeam"]["abbrev"],
+                        game["awayTeam"]["score"],
+                        game["homeTeam"]["abbrev"],
+                        game["homeTeam"]["score"],
+                        period,
+                        game["clock"]["timeRemaining"],
                     )
                 )
-
     return reply
 
 
