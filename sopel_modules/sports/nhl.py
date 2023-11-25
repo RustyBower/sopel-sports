@@ -4,6 +4,8 @@ import datetime
 import pytz
 import requests
 
+from dateutil import parser
+
 from sopel.formatting import bold
 from sopel.module import commands, example
 
@@ -21,9 +23,7 @@ def parse_games(date):
                 "{} @ {} {}".format(
                     game["awayTeam"]["abbrev"],
                     game["homeTeam"]["abbrev"],
-                    datetime.datetime.fromisoformat(game["startTimeUTC"])
-                    .astimezone(pytz.timezone("US/Central"))
-                    .strftime("%H:%M"),
+                    parser.parse(game["startTimeUTC"]).astimezone(pytz.timezone("US/Central")).strftime("%H:%M"),
                 )
             )
         elif game["gameState"] == "OFF":
