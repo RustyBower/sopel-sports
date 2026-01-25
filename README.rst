@@ -4,6 +4,13 @@ sopel-sports
 
 |version| |build| |issues| |alerts| |quality| |coverage-status| |license|
 
+**Important: This package is no longer updated. Please install sopel-sports for use with Sopel 8.0 and higher.**
+
+.. code-block::
+
+    pip uninstall sopel_modules.sports
+    pip install sopel-sports
+
 Introduction
 ============
 sopel-sports is a sports lookup module for Sopel.
