@@ -2,8 +2,8 @@
 # Copyright 2019, Rusty Bower, rustybower.com
 from __future__ import unicode_literals, absolute_import, print_function, division
 
+from sopel import plugin
 from sopel.formatting import bold
-from sopel.module import commands, example
 from sopel.tools.time import get_nick_timezone
 
 import arrow
@@ -243,11 +243,11 @@ def parse_game(game, timezone=None):
         )
 
 
-@commands("nfl")
-@example(".nfl")
-@example(".nfl all")
-@example(".nfl DEN")
-@example(".nfl Denver Broncos")
+@plugin.command("nfl")
+@plugin.example(".nfl")
+@plugin.example(".nfl all")
+@plugin.example(".nfl DEN")
+@plugin.example(".nfl Denver Broncos")
 def nfl(bot, trigger):
     """.nfl <team/all> - Show current game score or next game for an optionally specified team."""
     team = trigger.group(2)

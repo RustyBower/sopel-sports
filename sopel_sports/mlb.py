@@ -3,8 +3,8 @@
 import arrow
 import requests
 
+from sopel import plugin
 from sopel.formatting import bold
-from sopel.module import commands, example
 from sopel.tools.time import get_nick_timezone
 
 
@@ -72,9 +72,9 @@ def parse_games(date, timezone=None):
     return reply
 
 
-@commands("mlb")
-@example(".mlb")
-@example(".mlb 2019-10-29")
+@plugin.command("mlb")
+@plugin.example(".mlb")
+@plugin.example(".mlb 2019-10-29")
 def mlb(bot, trigger):
     date = trigger.group(2) or None
     timezone = get_nick_timezone(bot.db, trigger.nick)
