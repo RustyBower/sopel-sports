@@ -2,9 +2,7 @@
 """
 Sopel Sports Module
 """
-from .nfl import nfl
-from .nhl import nhl
-from .mlb import mlb
+from __future__ import annotations
 
 __author__ = 'Rusty Bower'
 __email__ = 'rusty@rustybower.com'

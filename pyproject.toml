@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+platforms = ["Linux x86, x86-64"]
+
+[tool.setuptools.packages.find]
+include = ["sopel_sports", "sopel_sports.*"]
+namespaces = false
+
+[project]
+name = "sopel-sports"
+version = "2.2.3"
+description = "Sopel Sports Module"
+keywords = [
+  "sopel",
+  "plugin",
+  "sports",
+  "nfl",
+  "nhl",
+  "mlb",
+  "bot",
+  "irc",
+]
+maintainers = [
+  { name="Rusty Bower", email="rusty@rustybower.com" },
+]
+authors = [
+  { name="Rusty Bower", email="rusty@rustybower.com" },
+]
+
+readme = "README.rst"
+license = { text="MIT" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat :: Internet Relay Chat",
+]
+requires-python = ">=3.8, <4"
+dependencies = [
+    "arrow",
+    "requests",
+    "sopel>=8",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/RustyBower/sopel-sports"
+"Bug Tracker" = "https://github.com/RustyBower/sopel-sports/issues"
+
+[project.entry-points."sopel.plugins"]
+nfl = "sopel_sports.nfl"
+nhl = "sopel_sports.nhl"
+mlb = "sopel_sports.mlb"
