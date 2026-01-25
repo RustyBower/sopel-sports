@@ -5,9 +5,10 @@ import requests
 
 from sopel.formatting import bold
 from sopel.module import commands, example
+from sopel.tools.time import get_nick_timezone
 
 
-def parse_games(date):
+def parse_games(date, timezone=None):
     if date:
         r = requests.get(
             "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={}".format(date)
@@ -20,12 +21,17 @@ def parse_games(date):
         for game in date["games"]:
             # Game Is Not Started
             if game["status"]["abstractGameState"] == "Preview":
+                # Localize to user timezone if possible
+                if timezone:
+                    game_time = arrow.get(game["gameDate"]).to(timezone).format("ddd h:mm A ZZZ")
+                # Otherwise, default to US/Eastern
+                else:
+                    game_time = arrow.get(game["gameDate"]).to("US/Eastern").format("ddd h:mm A ZZZ")
                 reply.append(
-                    "{} @ {} {} Eastern".format(
+                    "{} @ {} {}".format(
                         game["teams"]["away"]["team"]["name"],
                         game["teams"]["home"]["team"]["name"],
-                        # TODO - Allow users to specify timezone to return
-                        arrow.get(game["gameDate"]).to("US/Eastern").format("HH:mm"),
+                        game_time,
                     )
                 )
             elif game["status"]["abstractGameState"] == "Final":
@@ -71,9 +77,10 @@ def parse_games(date):
 @example(".mlb 2019-10-29")
 def mlb(bot, trigger):
     date = trigger.group(2) or None
+    timezone = get_nick_timezone(bot.db, trigger.nick)
 
     # Get Game Data
-    reply = " | ".join(parse_games(date))
+    reply = " | ".join(parse_games(date, timezone))
     # Split if greater than 200 characters so we don't accidentally cut anything off
     if len(reply) > 200:
         length = int(len(reply.split(" | ")) / 2)

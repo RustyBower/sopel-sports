@@ -1,16 +1,14 @@
 # coding=utf-8
 # Copyright 2019, Rusty Bower, rustybower.com
-import datetime
-import pytz
+import arrow
 import requests
-
-from dateutil import parser
 
 from sopel.formatting import bold
 from sopel.module import commands, example
+from sopel.tools.time import get_nick_timezone
 
 
-def parse_games(date):
+def parse_games(date, timezone=None):
     if date:
         r = requests.get(f"https://api-web.nhle.com/v1/score/{date}")
     else:
@@ -19,11 +17,17 @@ def parse_games(date):
     for game in r.json()["games"]:
         # Game Is Not Started
         if game["gameState"] == "FUT":
+            # Localize to user timezone if possible
+            if timezone:
+                game_time = arrow.get(game["startTimeUTC"]).to(timezone).format("ddd h:mm A ZZZ")
+            # Otherwise, default to US/Eastern
+            else:
+                game_time = arrow.get(game["startTimeUTC"]).to("US/Eastern").format("ddd h:mm A ZZZ")
             reply.append(
                 "{} @ {} {}".format(
                     game["awayTeam"]["abbrev"],
                     game["homeTeam"]["abbrev"],
-                    parser.parse(game["startTimeUTC"]).astimezone(pytz.timezone("US/Central")).strftime("%H:%M"),
+                    game_time,
                 )
             )
         elif game["gameState"] == "OFF" or game["gameState"] == "FINAL":  # TODO - Figure out OFF vs FINAL
@@ -100,9 +104,10 @@ def parse_games(date):
 @example(".nhl 2019-10-29")
 def nhl(bot, trigger):
     date = trigger.group(2) or None
+    timezone = get_nick_timezone(bot.db, trigger.nick)
 
     # Get Game Data
-    reply = " | ".join(parse_games(date))
+    reply = " | ".join(parse_games(date, timezone))
     # Split if greater than 200 characters so we don't accidentally cut anything off
     if len(reply) > 200:
         length = int(len(reply.split(" | ")) / 2)
