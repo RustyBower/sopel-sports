@@ -137,7 +137,7 @@ def update_inprogress(bot, games):
 
 def get_games(bot) -> list:
     r = requests.get(
-        "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
     )
     data = r.json()
 

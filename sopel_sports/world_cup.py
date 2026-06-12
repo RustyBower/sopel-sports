@@ -12,7 +12,7 @@ import requests
 
 def get_games(bot) -> list:
     r = requests.get(
-        "http://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard",
+        "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard",
     )
     data = r.json()
 
