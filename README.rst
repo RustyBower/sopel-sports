@@ -40,6 +40,19 @@ NHL
     .nhl 2019-09-27 # Get games for specific date
     New Jersey Devils 2 Columbus Blue Jackets 0 Final | Nashville Predators 2 Carolina Hurricanes 1 Final | Toronto Maple Leafs 4 Detroit Red Wings 3 Final | Washington Capitals 3 St. Louis Blues 4 Final | Los Angeles Kings 3 Vegas Golden Knights 2 Final
 
+World Cup
+~~~~~~~~~
+.. code-block::
+
+    .worldcup # Get live World Cup games (falls back to today's slate if none are live)
+    Bosnia-Herzegovina 1 Canada 0 45'+4'
+    .worldcup all # Get all of today's World Cup games
+    Bosnia-Herzegovina 1 Canada 0 45'+4' | United States @ Paraguay Fri 9:00 PM EDT
+    .worldcup USA # Get the latest score for a specific team
+    United States @ Paraguay Fri 9:00 PM EDT
+
+``.wc`` works as a shorthand for ``.worldcup``.
+
 Requirements
 ============
 

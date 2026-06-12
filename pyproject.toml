@@ -11,7 +11,7 @@ namespaces = false
 
 [project]
 name = "sopel-sports"
-version = "2.3.1"
+version = "2.4.0"
 description = "Sopel Sports Module"
 keywords = [
   "sopel",
@@ -20,6 +20,8 @@ keywords = [
   "nfl",
   "nhl",
   "mlb",
+  "worldcup",
+  "soccer",
   "bot",
   "irc",
 ]
@@ -59,3 +61,4 @@ dependencies = [
 nfl = "sopel_sports.nfl"
 nhl = "sopel_sports.nhl"
 mlb = "sopel_sports.mlb"
+world_cup = "sopel_sports.world_cup"
